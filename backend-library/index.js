@@ -10,7 +10,7 @@ const { SubscriptionServer } = require('subscriptions-transport-ws')
 const mongoose=require('mongoose')
 const jwt=require('jsonwebtoken')
 const JWT_SECRET='NEED_HERE_A_SECRET_KEY'
-const MONGODB_URI='mongodb+srv://alinaerf:librarygraphql@cluster0.y077pyj.mongodb.net/?retryWrites=true&w=majority'
+const MONGODB_URI=process.env.MONGODB_URI
 const resolvers=require('./resolvers')
 const typeDefs=require('./schema')
 
