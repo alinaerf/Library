@@ -2,3 +2,4 @@
 - Сайт онлайн библиотеки с функционалом логина, добавления новых книг, рекомендации книг, а также получения уведомлений по мере добавления новых книг на сервер.
 
 Создано с помощью: React.JS, GraphQL, Node.JS, MongoDB
+[![Library-2.gif](https://i.postimg.cc/9QBPJJ7x/Library-2.gif)](https://postimg.cc/FY7JKbGc)
