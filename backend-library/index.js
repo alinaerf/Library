@@ -3,13 +3,15 @@ const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core')
 const { makeExecutableSchema } = require('@graphql-tools/schema')
 const express = require('express')
 const http = require('http')
+require('dotenv').config();
+
 
 const { execute, subscribe } = require('graphql')
 const { SubscriptionServer } = require('subscriptions-transport-ws')
 
 const mongoose=require('mongoose')
 const jwt=require('jsonwebtoken')
-const JWT_SECRET='NEED_HERE_A_SECRET_KEY'
+const JWT_SECRET=process.env.JWT_SECRET
 const MONGODB_URI=process.env.MONGODB_URI
 const resolvers=require('./resolvers')
 const typeDefs=require('./schema')
