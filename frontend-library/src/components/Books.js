@@ -1,20 +1,21 @@
-/*import { useState } from "react"
-import { useQuery } from "@apollo/client"
-import { ALL_BOOKS } from "../queries"*/
-const Books = ({books,filter,setFilter, show}) => {
-  const allBooks=books
-  /*if (allBooks.loading){
+const Books = ({show, filter, setFilter, books}) => {
+  /*
+  //const [filter,setFilter]=useState(null)
+  //const allBooks=useQuery(ALL_BOOKS,{variables:{filter}} )
+  if (allBooks.loading){
     return <div>loading...</div>
   }*/
+  const allBooks=books
   if (!show) {
     return null
   }
+  //const initialBooks=allBooks.data.allBooks
   const initialBooks=allBooks
   const genres=initialBooks.map(a=>a.genres)
   const genresList=[... new Set(genres.join(',').split(','))]
   const setGenre=(genre)=>{
     if (genre==='all genres'){
-      setFilter(null)
+      setFilter(undefined)
     } else{
       setFilter(genre)
     }
@@ -26,7 +27,7 @@ const Books = ({books,filter,setFilter, show}) => {
       <div>
         <select onClick={({target})=>setGenre(target.value)}>
         <option value={'all genres'}>all genres</option>
-        {genresList.map(a=><option value={a}>{a}</option>)}
+        {genresList.map(a=><option value={a} key={a}>{a}</option>)}
         </select></div>
       <div>{filter?<div>in genre <strong>{filter}</strong></div>:null}</div>
 

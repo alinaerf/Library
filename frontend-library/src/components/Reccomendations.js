@@ -1,14 +1,13 @@
 import { useQuery } from "@apollo/client"
 import { ALL_BOOKS} from "../queries"
 const Recomendations =(props)=>{
-  const filter=props.genre.favouriteGenre
+    const filter=props.filter
     const books=useQuery(ALL_BOOKS, {
       variables:{filter}
     })
     if(!props.show){
-        return null
-    }
-
+      return null
+  }
     return(
         <div>
             <h2>Book Recommendations</h2>
@@ -26,7 +25,7 @@ const Recomendations =(props)=>{
               <td>{a.author.name}</td>
               <td>{a.published}</td>
             </tr>
-          )):<div>loading...</div>}
+          )):null}
         </tbody>
       </table>
         </div>

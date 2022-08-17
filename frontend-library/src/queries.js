@@ -95,3 +95,12 @@ export const ME=gql`
         }
     }
 `
+export const REGISTER =gql`
+    mutation Register($username: String!, $favouriteGenre: String!) {
+        createUser(username: $username, favouriteGenre: $favouriteGenre) {
+          username
+          favouriteGenre
+          id
+        }
+      }
+`

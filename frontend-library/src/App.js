@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
@@ -10,15 +10,10 @@ import { useApolloClient } from '@apollo/client/react'
 import {ME} from './queries'
 import Recomendations from './components/Reccomendations'
 import { BOOK_ADDED } from './queries'
+import RegisterForm from './components/RegisterForm'
 
 export const updateCache = (cache, query, addedBook) => {
-  const uniqByName = (a) => {
-    let seen = new Set()
-    return a.filter((item) => {
-      let k = item.name
-      return seen.has(k) ? false : seen.add(k)
-    })
-  }
+  console.log("UPDATE CACHE!")
   const changeAuthors =(a)=>{
     const oldAuth=a.slice(0, a.length-1)
     const newAuth=a[a.length-1]
@@ -30,8 +25,8 @@ export const updateCache = (cache, query, addedBook) => {
       return a
     }
   }
-
-  cache.updateQuery(query, ({ allBooks }) => {
+  
+  cache.updateQuery({query:ALL_BOOKS}, ({allBooks}) => {
     return {
       allBooks: allBooks.concat(addedBook),
     }
@@ -46,14 +41,15 @@ export const updateCache = (cache, query, addedBook) => {
 const App = () => {
   const [page, setPage] = useState('authors')
   const [token, setToken]=useState(null)
+  const [filter,setFilter]=useState(undefined)
   const result=useQuery(ALL_AUTHORS)
-  const result2=useQuery(ALL_BOOKS)
-  const userInfo=useQuery(ME)
+  const result2=useQuery(ALL_BOOKS,{variables:{filter}})
+  const {data, loading, refetch}=useQuery(ME)
   const client=useApolloClient()
   useSubscription(BOOK_ADDED, {
     onSubscriptionData:({subscriptionData})=>{
       const addedBook=subscriptionData.data.bookAdded
-      console.log(`Added book is: ${addedBook}`)
+      console.log("Added book is:",addedBook)
       window.alert(`Added new book: ${addedBook.title}`)
       updateCache(client.cache, {query:ALL_BOOKS}, addedBook)
     }
@@ -62,12 +58,15 @@ const App = () => {
     setToken(null)
     localStorage.clear()
     client.resetStore()
+    setPage("authors")
   }
-  if (result.loading|| result2.loading || userInfo.loading){
+  useEffect(()=>{
+    refetch()
+  })
+  if (result.loading|| result2.loading|| loading){
     return <div>loading...</div>
   }
-  console.log(userInfo.data.me)
-  
+  console.log("USER is:", data.me)
   return (
     <div>
       <div>
@@ -75,14 +74,16 @@ const App = () => {
         <button onClick={() => setPage('books')}>books</button>
         {token?<button onClick={() => setPage('add')}>add book</button>:null}
         {token?<button onClick={() => setPage('recomendations')}>recommend</button>:null}
-        {!token?<button onClick={()=>setPage('login')}>login</button>:<button onClick={()=>logout}>logout</button>}
+        {!token?<button onClick={()=>setPage('register')}>register</button>:null}
+        {!token?<button onClick={()=>setPage('login')}>login</button>:<button onClick={logout}>logout</button>}
       </div>
 
       <Authors show={page === 'authors'} authors={result.data.allAuthors} />
-      <Books show={page === 'books'} books={result2.data.allBooks} />
-      <LoginForm show={page==='login'} setToken={setToken} setPage={setPage}/>
+      <Books show={page === 'books'} books={result2.data.allBooks} filter={filter} setFilter={setFilter}/>
+      <RegisterForm show={page==='register'}/>
+      <LoginForm show={page==='login'} setToken={setToken} setPage={setPage} refetch={refetch}/>
       <NewBook show={page === 'add'} />
-      {token?<Recomendations show={page==='recomendations'}genre={userInfo.data.me}/>:null}
+      {token?<Recomendations show={page==='recomendations'} filter={data.me?data.me.favouriteGenre:null}/>:null}
     </div>
   )
 }
